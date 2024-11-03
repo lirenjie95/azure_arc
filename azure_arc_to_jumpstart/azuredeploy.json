@@ -22,22 +22,16 @@
                 "description": "RSA public key used for securing SSH access to Azure resources"
             }
         },
-        "spnClientId": {
-            "type": "string",
-            "metadata": {
-                "description": "Azure service principal client id"
-            }
-        },
-        "spnClientSecret": {
+        "identityName": {
             "type": "securestring",
             "metadata": {
-                "description": "Azure service principal client secret"
+                "description": "managed identity name"
             }
         },
-        "spnTenantId": {
-            "type": "string",
+        "clientId": {
+            "type": "securestring",
             "metadata": {
-                "description": "Azure AD tenant id for your service principal"
+                "description": "Client ID of the managed identity"
             }
         },
         "kubernetesVersion": {
@@ -175,12 +169,6 @@
                     "sshRSAPublicKey": {
                         "value": "[parameters('sshRSAPublicKey')]"
                     },
-                    "spnClientId": {
-                        "value": "[parameters('spnClientId')]"
-                    },
-                    "spnClientSecret": {
-                        "value": "[parameters('spnClientSecret')]"
-                    },
                     "kubernetesVersion": {
                         "value": "[parameters('kubernetesVersion')]"
                     },
@@ -209,14 +197,11 @@
                     "windowsAdminPassword": {
                         "value": "[parameters('windowsAdminPassword')]"
                     },
-                    "spnClientId": {
-                        "value": "[parameters('spnClientId')]"
+                    "identityName": {
+                        "value": "[parameters('identityName')]"
                     },
-                    "spnClientSecret": {
-                        "value": "[parameters('spnClientSecret')]"
-                    },
-                    "spnTenantId": {
-                        "value": "[parameters('spnTenantId')]"
+                    "clientId": {
+                        "value": "[parameters('clientId')]"
                     },
                     "clusterName": {
                         "value": "[parameters('clusterName')]"

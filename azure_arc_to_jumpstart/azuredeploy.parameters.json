@@ -5,14 +5,11 @@
         "sshRSAPublicKey": {
             "value": "<your RSA public key>"
         },
-        "spnClientId": {
-            "value": "<your service principal client id>"
+        "identityName": {
+            "value": "<your managed identity name>"
         },
-        "spnClientSecret": {
-            "value": "<your service principal secret>"
-        },
-        "spnTenantId": {
-            "value": "<your spn tenant id>"
+        "clientId": {
+            "value": "<your client ID>"
         },
         "windowsAdminUsername": {
             "value": "toadmin"

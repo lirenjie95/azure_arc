@@ -94,22 +94,16 @@
                 "Project": "jumpstart_azure_arc_to"
             }
         },
-        "spnClientId": {
+        "clientId": {
             "type": "string",
             "metadata": {
-                "description": "Client id of the service principal"
+                "description": "Client id of the managed identity"
             }
         },
-        "spnClientSecret": {
+        "identityName": {
             "type": "securestring",
             "metadata": {
-                "description": "Client secret of the service principal"
-            }
-        },
-        "spnTenantId": {
-            "type": "string",
-            "metadata": {
-                "description": "Tenant id of the service principal"
+                "description": "managed identity name"
             }
         },
         "clusterName": {
@@ -234,6 +228,12 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2021-11-01",
             "name": "[variables('vmName')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('identityName'))]": {}
+                }
+            },
             "location": "[parameters('azureLocation')]",
             "tags": "[parameters('resourceTags')]",
             "dependsOn": [
@@ -298,7 +298,7 @@
                     "fileUris": [
                         "[uri(parameters('templateBaseUrl'), 'Bootstrap.ps1')]"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Bypass -File Bootstrap.ps1', ' -spnClientId ', parameters('spnClientId'), ' -spnClientSecret ', parameters('spnClientSecret'), ' -spnTenantId ', parameters('spnTenantId'), ' -subscriptionId ', subscription().subscriptionId, ' -resourceGroup ', resourceGroup().name,' -azureLocation ', parameters('azureLocation'),' -extensionName ', parameters('extensionName'), ' -customLocationName ', parameters('customLocationName'), ' -extensionVersion ', parameters('extensionVersion'), ' -clusterName ', parameters('clusterName'))]"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Bypass -File Bootstrap.ps1', ' -clientId ', parameters('clientId'), ' -identityName ', parameters('identityName'), ' -subscriptionId ', subscription().subscriptionId, ' -resourceGroup ', resourceGroup().name,' -azureLocation ', parameters('azureLocation'),' -extensionName ', parameters('extensionName'), ' -customLocationName ', parameters('customLocationName'), ' -extensionVersion ', parameters('extensionVersion'), ' -clusterName ', parameters('clusterName'))]"
                 }
             }
         },

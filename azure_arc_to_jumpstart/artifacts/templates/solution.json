@@ -1,0 +1,133 @@
+{
+    "properties": {
+        "components": [
+            {
+                "name": "nginx-ingress",
+                "properties": {
+                    "chart": {
+                        "repo": "https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-4.7.1/ingress-nginx-4.7.1.tgz",
+                        "name": "ingress-nginx",
+                        "wait": true,
+                        "timeout": "10m"
+                    },
+                    "values": {
+                        "controller": {
+                            "replicaCount": 1,
+                            "nodeSelector": {
+                                "kubernetes.io/os": "linux"
+                            },
+                            "admissionWebhooks": {
+                                "patch": {
+                                    "nodeSelector": {
+                                        "kubernetes.io/os": "linux"
+                                    }
+                                }
+                            },
+                            "service": {
+                                "annotations": {
+                                    "service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path": "/healthz"
+                                }
+                            }
+                        },
+                        "defaultBackend": {
+                            "nodeSelector": {
+                                "kubernetes.io/os": "linux"
+                            }
+                        }
+                    }
+                },
+                "type": "helm.v3"
+            },
+            {
+                "name": "database",
+                "type": "container",
+                "metadata": {
+                    "service.ports": "[{\"name\":\"port3306\",\"port\": 3306,\"targetPort\":3306}]",
+                    "service.type": "ClusterIP"
+                },
+                "properties": {
+                    "deployment.replicas": "#1",
+                    "container.ports": "[{\"containerPort\":3306,\"protocol\":\"TCP\"}]",
+                    "container.image": "docker.io/mysql:8.4.3",
+                    "env.MYSQL_ALLOW_EMPTY_PASSWORD": "yes"
+                }
+            },
+            {
+                "name": "backend-v1",
+                "type": "container",
+                "metadata": {
+                    "service.ports": "[{\"name\":\"port3012\",\"port\": 3012,\"targetPort\":5000}]",
+                    "service.type": "ClusterIP"
+                },
+                "properties": {
+                    "deployment.replicas": "#1",
+                    "container.ports": "[{\"containerPort\":5000,\"protocol\":\"TCP\"}]",
+                    "container.image": "ghcr.io/lirenjie95/flask-v1:latest",
+                    "env.MYSQL_HOST": "database"
+                },
+                "dependencies": [
+                    "database"
+                ]
+            },
+            {
+                "name": "sensor",
+                "type": "container",
+                "metadata": {
+                    "service.type": "ClusterIP"
+                },
+                "properties": {
+                    "deployment.replicas": "#1",
+                    "container.image": "ghcr.io/lirenjie95/sensor:latest",
+                    "env.API_ENDPOINT": "http://nginx-ingress-ingress-nginx-controller.default.svc.cluster.local:80"
+                },
+                "dependencies": [
+                    "database"
+                ]
+            },
+            {
+                "name": "ingress",
+                "type": "ingress",
+                "metadata": {
+                    "annotations.nginx.ingress.kubernetes.io/use-regex": "true",
+                    "annotations.nginx.ingress.kubernetes.io/rewrite-target": "/$2"
+                },
+                "properties": {
+                    "ingressClassName": "nginx",
+                    "rules": [
+                        {
+                            "http": {
+                                "paths": [
+                                    {
+                                        "host": "samples.com",
+                                        "path": "/()(.*)",
+                                        "pathType": "ImplementationSpecific",
+                                        "backend": {
+                                            "service": {
+                                                "name": "backend-v1",
+                                                "port": {
+                                                    "number": 3012
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "dependencies": [
+                    "nginx-ingress",
+                    "backend-v1",
+                    "sensor",
+                    "database"
+                ]
+            }
+        ]
+    },
+    "extendedLocation": {
+        "name": "/subscriptions/<YOURSUBID>/resourceGroups/<YOURRESOURCEGROUP>/providers/Microsoft.ExtendedLocation/customLocations/<YOURCUSTOMLOCATION>",
+        "type": "CustomLocation"
+    },
+    "tags": {},
+    "location": "<YOURLOCATION>"
+}

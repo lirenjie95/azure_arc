@@ -169,6 +169,9 @@
                     "sshRSAPublicKey": {
                         "value": "[parameters('sshRSAPublicKey')]"
                     },
+                    "identityName": {
+                        "value": "[parameters('identityName')]"
+                    },
                     "kubernetesVersion": {
                         "value": "[parameters('kubernetesVersion')]"
                     },

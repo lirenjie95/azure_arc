@@ -24,7 +24,7 @@
             "value": "toolchainorclocation"
         },
         "extensionVersion": {
-            "value": "0.1.4"
+            "value": "1.0.26"
         },
         "deployBastion": {
             "value": false

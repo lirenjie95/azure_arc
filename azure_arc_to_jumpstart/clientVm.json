@@ -54,7 +54,7 @@
             }
         },
         "extensionVersion": {
-            "defaultValue": "0.1.4",
+            "defaultValue": "1.0.26",
             "type": "string",
             "metadata": {
                 "description": "the extension's version"
@@ -296,9 +296,9 @@
                 "autoUpgradeMinorVersion": true,
                 "protectedSettings": {
                     "fileUris": [
-                        "[uri(parameters('templateBaseUrl'), 'Bootstrap.ps1')]"
+                        "[uri(concat(parameters('templateBaseUrl'), 'artifacts/'), 'Bootstrap.ps1')]"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Bypass -File Bootstrap.ps1', ' -clientId ', parameters('clientId'), ' -identityName ', parameters('identityName'), ' -subscriptionId ', subscription().subscriptionId, ' -resourceGroup ', resourceGroup().name,' -azureLocation ', parameters('azureLocation'),' -extensionName ', parameters('extensionName'), ' -customLocationName ', parameters('customLocationName'), ' -extensionVersion ', parameters('extensionVersion'), ' -clusterName ', parameters('clusterName'))]"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Bypass -File Bootstrap.ps1', ' -clientId ', parameters('clientId'), ' -identityName ', parameters('identityName'), ' -subscriptionId ', subscription().subscriptionId, ' -resourceGroup ', resourceGroup().name,' -azureLocation ', parameters('azureLocation'),' -extensionName ', parameters('extensionName'), ' -customLocationName ', parameters('customLocationName'), ' -extensionVersion ', parameters('extensionVersion'), ' -clusterName ', parameters('clusterName'), ' -templateBaseUrl ', concat(parameters('templateBaseUrl'), 'artifacts'))]"
                 }
             }
         },

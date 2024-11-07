@@ -54,7 +54,7 @@
             }
         },
         "extensionVersion": {
-            "defaultValue": "1.0.26",
+            "defaultValue": "1.0.32",
             "type": "string",
             "metadata": {
                 "description": "the extension's version"

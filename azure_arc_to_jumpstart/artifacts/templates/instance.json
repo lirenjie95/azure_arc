@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "solution": "solution:v1",
+        "target": {
+            "name": "target"
+        }
+    },
+    "extendedLocation": {
+        "name": "/subscriptions/<YOURSUBID>/resourceGroups/<YOURRESOURCEGROUP>/providers/Microsoft.ExtendedLocation/customLocations/<YOURCUSTOMLOCATION>",
+        "type": "CustomLocation"
+    },
+    "tags": {},
+    "location": "<YOURLOCATION>"
+}

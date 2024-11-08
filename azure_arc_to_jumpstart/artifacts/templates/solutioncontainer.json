@@ -1,0 +1,10 @@
+{
+    "properties": {
+    },
+    "extendedLocation": {
+        "name": "/subscriptions/<YOURSUBID>/resourceGroups/<YOURRESOURCEGROUP>/providers/Microsoft.ExtendedLocation/customLocations/<YOURCUSTOMLOCATION>",
+        "type": "CustomLocation"
+    },
+    "tags": {},
+    "location": "<YOURLOCATION>"
+}

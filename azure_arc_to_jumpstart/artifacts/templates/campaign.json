@@ -1,0 +1,128 @@
+{
+    "properties": {
+        "firstStage": "deploy-v2",
+        "selfDriving": true,
+        "stages": {
+            "deploy-v2": {
+                "name": "deploy-v2",
+                "provider": "providers.stage.patch",
+                "config": {
+                    "baseUrl": "http://symphony-service:8080/v1alpha2/",
+                    "user": "admin",
+                    "password": ""
+                },
+                "inputs": {
+                    "objectType": "solution",
+                    "objectName": "solution:v1",
+                    "patchSource": "inline",
+                    "patchContent": {
+                        "name": "backend-v2",
+                        "type": "container",
+                        "metadata": {
+                            "service.ports": "[{\"name\":\"port3013\",\"port\": 3013,\"targetPort\":5000}]",
+                            "service.type": "ClusterIP"
+                        },
+                        "properties": {
+                            "deployment.replicas": "#1",
+                            "container.ports": "[{\"containerPort\":5000,\"protocol\":\"TCP\"}]",
+                            "container.image": "ghcr.io/lirenjie95/flask-v2:latest",
+                            "env.MYSQL_HOST": "database"
+                        }
+                    },
+                    "patchAction": "add"
+                },
+                "stageSelector": "before-test"
+            },
+            "before-test": {
+                "name": "before-test",
+                "provider": "providers.stage.delay",
+                "inputs": {
+                    "delay": "10s"
+                },
+                "stageSelector": "test"
+            },
+            "test": {
+                "name": "test",
+                "provider": "providers.stage.http",
+                "inputs": {
+                    "url": "http://backend-v2.default.svc.cluster.local:3013/",
+                    "method": "GET"
+                },
+                "stageSelector": "${{$if($equal($output(test,status),200), 'finalize', 'before-test')}}"
+            },
+            "finalize": {
+                "name": "finalize",
+                "provider": "providers.stage.patch",
+                "config": {
+                    "baseUrl": "http://symphony-service:8080/v1alpha2/",
+                    "user": "admin",
+                    "password": ""
+                },
+                "inputs": {
+                    "objectType": "solution",
+                    "objectName": "solution:v1",
+                    "patchSource": "inline",
+                    "patchContent": {
+                        "name": "ingress",
+                        "type": "ingress",
+                        "metadata": {
+                            "annotations.nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+                            "annotations.nginx.ingress.kubernetes.io/use-regex": "true"
+                        },
+                        "properties": {
+                            "ingressClassName": "nginx",
+                            "rules": [
+                                {
+                                    "http": {
+                                        "paths": [
+                                            {
+                                                "path": "/()(.*)",
+                                                "pathType": "ImplementationSpecific",
+                                                "backend": {
+                                                    "service": {
+                                                        "name": "backend-v2",
+                                                        "port": {
+                                                            "number": 3013
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "patchAction": "add"
+                },
+                "stageSelector": "finalize-2"
+            },
+            "finalize-2": {
+                "name": "finalize-2",
+                "provider": "providers.stage.patch",
+                "config": {
+                    "baseUrl": "http://symphony-service:8080/v1alpha2/",
+                    "user": "admin",
+                    "password": ""
+                },
+                "inputs": {
+                    "objectType": "solution",
+                    "objectName": "solution:v1",
+                    "patchSource": "inline",
+                    "patchContent": {
+                        "name": "backend-v1",
+                        "type": "container"
+                    },
+                    "patchAction": "remove"
+                },
+                "stageSelector": ""
+            }
+        }
+    },
+    "extendedLocation": {
+        "name": "/subscriptions/<YOURSUBID>/resourceGroups/<YOURRESOURCEGROUP>/providers/Microsoft.ExtendedLocation/customLocations/<YOURCUSTOMLOCATION>",
+        "type": "CustomLocation"
+    },
+    "tags": {},
+    "location": "<YOURLOCATION>"
+}

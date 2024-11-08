@@ -1,0 +1,38 @@
+{
+    "properties": {
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "instance",
+                        "provider": "providers.target.k8s",
+                        "config": {
+                            "inCluster": "true",
+                            "deploymentStrategy": "services"
+                        }
+                    },
+                    {
+                        "role": "helm.v3",
+                        "provider": "providers.target.helm",
+                        "config": {
+                            "inCluster": "true"
+                        }
+                    },
+                    {
+                        "role": "ingress",
+                        "provider": "providers.target.ingress",
+                        "config": {
+                            "inCluster": "true"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "extendedLocation": {
+        "name": "/subscriptions/<YOURSUBID>/resourceGroups/<YOURRESOURCEGROUP>/providers/Microsoft.ExtendedLocation/customLocations/<YOURCUSTOMLOCATION>",
+        "type": "CustomLocation"
+    },
+    "tags": {},
+    "location": "<YOURLOCATION>"
+}
